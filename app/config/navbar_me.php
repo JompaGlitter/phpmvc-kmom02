@@ -17,6 +17,13 @@ return [
             'url'   => $this->di->get('url')->create(''),
             'title' => 'Min me-sida om mig'
         ],
+        
+        // This is a menu item
+        'smalltalk'  => [
+            'text'  => 'SmallTalk',
+            'url'   => $this->di->get('url')->create('smalltalk'),
+            'title' => 'SmallTalk diskussionsforum'
+        ],
  
         // This is a menu item
         'report'  => [

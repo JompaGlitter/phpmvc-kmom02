@@ -7,6 +7,14 @@
 // Get the enviroment, autoloader and the $app object
 require __DIR__.'/config_with_app.php';
 
+// Inject the comment service into the app
+$di->set('CommentController', function() use ($di) {
+    $controller = new Phpmvc\Comment\CommentController();
+    $controller->setDI($di);
+    return $controller;
+});
+
+
 // Set link creation to 'clean' for a nice, clean link displayment
 $app->url->setUrlType(\Anax\Url\CUrl::URL_CLEAN);
 
@@ -22,6 +30,8 @@ $app->navbar->configure(ANAX_APP_PATH . '/config/navbar_me.php');
 // Home rout, the 'me' page
 $app->router->add('', function() use ($app) {
     
+    $app->theme->addStylesheet('css/form.css');
+    $app->theme->addStylesheet('css/comment.css');
     $app->theme->setTitle("Om mig");
     
     $content = $app->fileContent->get('me.md');
@@ -34,7 +44,47 @@ $app->router->add('', function() use ($app) {
         'content' => $content,
         'byline' => $byline,
     ]);
+    
+    $app->dispatcher->forward([
+        'controller' => 'comment',
+        'action'     => 'view',
+        'params'    => ['me'],
+    ]);
+    
+    $app->views->add('comment/form', [
+        'mail'      => null,
+        'web'       => null,
+        'name'      => null,
+        'content'   => null,
+        'output'    => null,
+        'pagekey'   => 'me',
+    ]);
 
+});
+
+// Rout to SmallTalk, the discussion page
+$app->router->add('smalltalk', function() use ($app) {
+
+    $app->theme->addStylesheet('css/form.css');
+    $app->theme->addStylesheet('css/comment.css');
+    $app->theme->setTitle("Välkommen till SmallTalk");
+    $app->views->add('comment/index');
+
+    $app->dispatcher->forward([
+        'controller' => 'comment',
+        'action'     => 'view',
+        'params'    => ['smalltalk'],
+    ]);
+
+    $app->views->add('comment/form', [
+        'mail'      => null,
+        'web'       => null,
+        'name'      => null,
+        'content'   => null,
+        'output'    => null,
+        'pagekey'   => 'smalltalk',
+    ]);
+    
 });
 
 // Rout to show site for reports
